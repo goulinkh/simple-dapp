@@ -1,7 +1,7 @@
 import { FC } from "react";
 import Address from "./Address";
 import Network from "./Network";
-import { SecondaryButton } from "./UI/button";
+import { SecondaryButton } from "./UI/Button";
 
 type Props = {
   network: { name: string };

@@ -1,7 +1,8 @@
+import Link from "next/link";
 import Balance from "src/components/Balance";
 import Header from "src/components/Header";
 import Transactions from "src/components/Transactions";
-import { PrimaryButton } from "src/components/UI/button";
+import { PrimaryButton } from "src/components/UI/Button";
 
 export default function Home() {
   return (
@@ -10,7 +11,9 @@ export default function Home() {
       <main className="container space-y-10">
         <div className="flex items-center justify-between">
           <Balance value="2.14" />
-          <PrimaryButton className="px-8">Send</PrimaryButton>
+          <Link href="/send">
+            <PrimaryButton className="px-8">Send</PrimaryButton>
+          </Link>
         </div>
         <Transactions
           transactions={[

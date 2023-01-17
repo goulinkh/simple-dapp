@@ -8,19 +8,31 @@ type ButtonProps = DetailedHTMLProps<
 
 const Button: FC<ButtonProps> = ({ children, className, ...props }) => {
   return (
-    <button {...props} className={clsx(className, "rounded-lg py-1 px-4")}>
+    <button
+      {...props}
+      className={clsx(
+        className,
+        "rounded-lg py-1 px-4 focus:border-primary focus:outline-primary"
+      )}
+    >
       {children}
     </button>
   );
 };
 
-export const PrimaryButton: FC<ButtonProps> = (props) => {
+export const PrimaryButton: FC<ButtonProps> = ({
+  className,
+  disabled,
+  ...props
+}) => {
   return (
     <Button
       {...props}
+      disabled={disabled}
       className={clsx(
-        props.className,
-        "bg-primary text-white transition-[background-color] hover:bg-primary/90"
+        className,
+        "border border-transparent bg-primary text-white transition-[background-color] hover:bg-primary/90",
+        { "!border-zinc-300 !bg-black/5 text-black": disabled }
       )}
     />
   );

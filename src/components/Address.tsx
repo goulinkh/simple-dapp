@@ -1,4 +1,5 @@
 import * as Tooltip from "@radix-ui/react-tooltip";
+import clsx from "clsx";
 import { FC } from "react";
 import useCopyToClipboard from "src/hooks/useCopyToClipboard";
 
@@ -15,7 +16,13 @@ const Address: FC<Props> = ({ address, className }) => {
   return (
     <Tooltip.Provider delayDuration={0}>
       <Tooltip.Root>
-        <Tooltip.Trigger className={className} onClick={copyAddressToClipboard}>
+        <Tooltip.Trigger
+          className={clsx(
+            className,
+            "focus:border-primary focus:outline-primary"
+          )}
+          onClick={copyAddressToClipboard}
+        >
           {address}
         </Tooltip.Trigger>
         <Tooltip.Portal>

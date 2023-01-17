@@ -14,6 +14,18 @@ module.exports = {
       colors: {
         primary: { DEFAULT: "#FF5E00" },
       },
+      borderColor: (theme) => ({
+        DEFAULT: theme("colors.zinc.200"),
+      }),
+      animation: {
+        fade: "fadeIn .7s ease",
+      },
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "100" },
+        },
+      },
     },
   },
   plugins: [],

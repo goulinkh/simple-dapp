@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  @apply bg-zinc-100 px-2;
+}
+
+.container {
+  @apply mx-auto max-w-2xl rounded-lg border bg-white p-5;
+}

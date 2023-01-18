@@ -11,6 +11,12 @@ A simple [dApp](https://en.wikipedia.org/wiki/Decentralized_application) that co
 
 ## Running the project locally
 
+### Prerequisite, the database
+
+This project uses an ORM called Prisma along with Postgres, you can follow [the official guide](https://www.prisma.io/dataguide/postgresql/setting-up-a-local-postgresql-database) on how to setup a postgres server locally.
+
+### Start the server
+
 You need to have NodeJS installed locally along with yarn.
 
 To run the project simply run these 2 commands:

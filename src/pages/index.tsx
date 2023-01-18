@@ -1,14 +1,45 @@
+import { Transaction } from "@prisma/client";
 import Link from "next/link";
 import { useContext } from "react";
 import Balance from "src/components/Balance";
 import Header from "src/components/Header";
-import Transactions from "src/components/Transactions";
+import Loading from "src/components/Loading";
+import Transactions, {
+  Transaction as UITransaction,
+} from "src/components/Transactions";
 import { PrimaryButton } from "src/components/UI/Button";
-import { MetaMaskWalletContext } from "src/context/MetaMaskWalletContext";
+import {
+  MetaMaskWalletContext,
+  Wallet,
+} from "src/context/MetaMaskWalletContext";
+import { fetcher } from "src/utils";
+import useSWR from "swr";
+
+const txToUITransactionItem = (
+  tx: Transaction,
+  wallet: Wallet
+): UITransaction => {
+  const txType =
+    wallet.address.toLowerCase() === tx.from.toLowerCase()
+      ? "sent"
+      : "received";
+  const targetAddress = txType === "sent" ? tx.to : tx.from;
+  return {
+    amount: tx.value,
+    type: txType,
+    targetAddress,
+    timestamp: new Date(tx.createdAt).getTime(),
+  };
+};
 
 export default function Home() {
   const { wallet } = useContext<any>(MetaMaskWalletContext);
-
+  // TODO: show the errors if exist
+  const { data, error, isLoading } = useSWR<Transaction[]>(() => {
+    if (wallet) {
+      return `/api/transactions?address=${wallet.address}`;
+    }
+  }, fetcher);
   return (
     <>
       <Header
@@ -22,28 +53,12 @@ export default function Home() {
             <PrimaryButton className="px-8">Send</PrimaryButton>
           </Link>
         </div>
-        <Transactions
-          transactions={[
-            {
-              amount: "1.23",
-              targetAddress: "0x1B7aA44088a0eA95bdc65fef6E5071E946Bf7d8f",
-              timestamp: 1673983625208,
-              type: "received",
-            },
-            {
-              amount: "0.133",
-              targetAddress: "0x1B7aA44088a0eA95bdc65fef6E5071E946Bf7d8f",
-              timestamp: 1673988625208,
-              type: "sent",
-            },
-            {
-              amount: "5.1",
-              targetAddress: "0x1B7aA44088a0eA95bdc65fef6E5071E946Bf7d8f",
-              timestamp: 1673988925208,
-              type: "received",
-            },
-          ]}
-        />
+        {(isLoading || !data) && <Loading />}
+        {data && (
+          <Transactions
+            transactions={data?.map((tx) => txToUITransactionItem(tx, wallet))}
+          />
+        )}
       </main>
     </>
   );

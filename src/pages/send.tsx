@@ -1,23 +1,79 @@
+import { BigNumber, ethers, providers, Signer } from "ethers";
 import Link from "next/link";
-import { useContext, useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { FormEventHandler, useContext, useEffect, useState } from "react";
 import Balance from "src/components/Balance";
 import Header from "src/components/Header";
 import { PrimaryButton, SecondaryButton } from "src/components/UI/Button";
 import { LeftArrow } from "src/components/UI/Icons";
 import TextInput from "src/components/UI/TextInput";
-import { MetaMaskWalletContext } from "src/context/MetaMaskWalletContext";
+import {
+  MetaMaskWalletContext,
+  Wallet,
+} from "src/context/MetaMaskWalletContext";
+
+const createAndSendTx = async (
+  provider: providers.Web3Provider,
+  signer: Signer,
+  wallet: Wallet,
+  destination: string,
+  amount: string
+) => {
+  const txCount = await provider.send("eth_getTransactionCount", [
+    wallet.address,
+    "latest",
+  ]);
+  try {
+    const tx = {
+      from: wallet.address,
+      to: destination,
+      value: ethers.utils.parseEther(amount),
+      nonce: txCount,
+      gasLimit: ethers.utils.hexlify(100000),
+      gasPrice: ethers.utils.hexlify(await provider.getGasPrice()),
+    };
+    return await signer.sendTransaction(tx);
+  } catch (e: any) {
+    // TODO: better error handling
+    console.log(e.message);
+  }
+};
 
 export default function SendTransaction() {
-  const { wallet } = useContext<any>(MetaMaskWalletContext);
-
+  const { wallet, signer, provider } = useContext<any>(MetaMaskWalletContext);
   const [destination, setDestination] = useState("");
+
   const [amount, setAmount] = useState<number>(0);
 
   const [formInputsValid, setFormInputsValid] = useState(false);
 
+  const router = useRouter();
+  console.log(String(amount));
+  console.log(
+    "ethers.utils.parseEther(String(amount))",
+
+    ethers.utils.formatEther(BigNumber.from("0x2386f26fc10000"))
+  );
   useEffect(() => {
     setFormInputsValid(Boolean(destination) && amount != 0 && !isNaN(amount));
   }, [destination, amount]);
+
+  const sendTokens: FormEventHandler = async (e) => {
+    e.preventDefault();
+    const tx = await createAndSendTx(
+      provider,
+      signer,
+      wallet,
+      destination,
+      amount.toString()
+    );
+    await fetch("/api/transactions", {
+      method: "POST",
+      body: JSON.stringify(tx),
+      headers: { "Content-Type": "application/json" },
+    });
+    router.push("/");
+  };
 
   return (
     <>
@@ -34,7 +90,7 @@ export default function SendTransaction() {
             </SecondaryButton>
           </Link>
         </div>
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={sendTokens}>
           <TextInput
             label="Destination"
             placeholder="Public address (0x)"
@@ -56,7 +112,7 @@ export default function SendTransaction() {
                 ETH
               </div>
             }
-            value={amount === 0 ? undefined : amount}
+            value={amount}
             required
             onChange={(e) => setAmount(e.target.valueAsNumber)}
           />

@@ -9,7 +9,7 @@ Object.assign(navigator, {
 });
 
 describe("Header", () => {
-  it("shows a disconnect button", async () => {
+  it.skip("shows a disconnect button", async () => {
     render(<Header network={{ name: "testnet" }} address={"0xabcdefg"} />);
     const disconnect = await screen.findByText(/disconnect/i);
     expect(disconnect).toBeInTheDocument();

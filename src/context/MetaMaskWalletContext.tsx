@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import { createContext, ReactElement, useEffect, useState } from "react";
 
-type Wallet = {
+export type Wallet = {
   balance: string;
   network: { name: string };
   address: string;
@@ -42,7 +42,6 @@ export const MetaMaskWalletProvider = ({
 
   // TODO: connection error handling
   const connect = async () => {
-    console.log(provider);
     if (!provider) return;
     // force the usage of the Goedi blockchain
     await provider.send("wallet_switchEthereumChain", [{ chainId: "0x5" }]);
@@ -57,8 +56,10 @@ export const MetaMaskWalletProvider = ({
       network: { name: provider.network.name },
     });
     if (!connected) setConnected(true);
-    // redirect to the home page
-    router.push((router.query.returnUrl as string) || "/");
+    if (router.asPath.includes(LOGIN_ROUTE)) {
+      // redirect to the home page
+      router.push((router.query.returnUrl as string) || "/");
+    }
   };
 
   const checkConnection = async (provider: ethers.providers.Web3Provider) => {
@@ -97,7 +98,9 @@ export const MetaMaskWalletProvider = ({
   }, [connected, router]);
 
   return (
-    <MetaMaskWalletContext.Provider value={{ connect, connected, wallet }}>
+    <MetaMaskWalletContext.Provider
+      value={{ connect, connected, wallet, signer, provider }}
+    >
       {children}
     </MetaMaskWalletContext.Provider>
   );

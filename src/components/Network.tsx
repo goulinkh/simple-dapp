@@ -9,7 +9,7 @@ const Network: FC<Props> = ({ name }) => {
         className="h-3 w-3 rounded-full bg-green-600  outline outline-4
        outline-green-600/20"
       ></div>
-      <span>{name}</span>
+      <span className="capitalize">{name}</span>
     </div>
   );
 };

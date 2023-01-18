@@ -1,12 +1,15 @@
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Balance from "src/components/Balance";
 import Header from "src/components/Header";
 import { PrimaryButton, SecondaryButton } from "src/components/UI/Button";
 import { LeftArrow } from "src/components/UI/Icons";
 import TextInput from "src/components/UI/TextInput";
+import { MetaMaskWalletContext } from "src/context/MetaMaskWalletContext";
 
 export default function SendTransaction() {
+  const { wallet } = useContext<any>(MetaMaskWalletContext);
+
   const [destination, setDestination] = useState("");
   const [amount, setAmount] = useState<number>(0);
 
@@ -18,10 +21,13 @@ export default function SendTransaction() {
 
   return (
     <>
-      <Header address="test" network={{ name: "test" }} />
+      <Header
+        address={wallet?.address || "loading"}
+        network={wallet?.network}
+      />
       <main className="container space-y-10">
         <div className="flex justify-between">
-          <Balance value="2.14" />
+          <Balance value={wallet?.balance} />
           <Link href="/">
             <SecondaryButton className="flex items-center gap-1 text-sm">
               <LeftArrow className="w-4" /> Go back

@@ -1,16 +1,23 @@
 import Link from "next/link";
+import { useContext } from "react";
 import Balance from "src/components/Balance";
 import Header from "src/components/Header";
 import Transactions from "src/components/Transactions";
 import { PrimaryButton } from "src/components/UI/Button";
+import { MetaMaskWalletContext } from "src/context/MetaMaskWalletContext";
 
 export default function Home() {
+  const { wallet } = useContext<any>(MetaMaskWalletContext);
+
   return (
     <>
-      <Header address="test" network={{ name: "test" }} />
+      <Header
+        address={wallet?.address || "loading"}
+        network={wallet?.network}
+      />
       <main className="container space-y-10">
         <div className="flex items-center justify-between">
-          <Balance value="2.14" />
+          <Balance value={wallet?.balance} />
           <Link href="/send">
             <PrimaryButton className="px-8">Send</PrimaryButton>
           </Link>
